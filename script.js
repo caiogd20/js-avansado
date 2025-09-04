@@ -1,44 +1,15 @@
 let container = document.getElementById('container');
-let Pgeo = document.createElement('p');
-Pgeo.id = 'geo';
-container.appendChild(Pgeo);
-
-function getCurrentPositionPromise() {
-    return new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject);
-    });
+function carga(n) {
+    fetch('https://reqres.in/api/users/'+n)
+        .then((resp) => resp.json())
+        .then((obj) => console.log(obj))
+        .catch(err => {
+            let out = document.getElementById('users');
+            console.error(err);
+            out.innerHTML = 'Erro ao carregar usuários: ' + err;
+        });
 }
+container.innerHTML = '<button onclick="carga(1)">Carregar Usuário 1</button><button onclick="carga(2)">Carregar Usuário 2</button><div id="users"></div>';
 
-getCurrentPositionPromise()
-    .then(pos => {
-        console.log(`latitude: ${pos.coords.latitude}`);
-        console.log(`longitude: ${pos.coords.longitude}`);
-        Pgeo.innerText = `latitude: ${pos.coords.latitude}
-        longitude: ${pos.coords.longitude}`;
-    })
-    .catch(erro => {
-        console.error(`Erro: ${erro.code} - ${erro.message}`);
-        Pgeo.innerText = `Erro: ${erro.code} - ${erro.message}`;
-    });
 
-let Pdb = document.createElement('p');
-Pdb.id = 'db';
-container.appendChild(Pdb);
-
-function openIndexedDBPromise(name, version) {
-    return new Promise((resolve, reject) => {
-        let request = indexedDB.open(name, version);
-        request.onsuccess = event => resolve(event.target.result);
-        request.onerror = event => reject(event.target.error);
-    });
-}
-
-openIndexedDBPromise('meuDB', 1)
-    .then(db => {
-        console.log('Banco aberto com sucesso');
-        Pdb.innerText = 'Banco aberto com sucesso';
-    })
-    .catch(error => {
-        console.error('Erro ao abrir o banco', error);
-        Pdb.innerText = `Erro ao abrir o banco: ${error}`;
-    });
+carga(1);
